@@ -1,103 +1,122 @@
-#include <iostream>
-using namespace std;
+#include <iostream>       
+using namespace std;          
 
-// DefiniÁ„o de um nÛ da lista encadeada
-typedef struct Reg {  // reg representa nÛ da lista encadeada
-    int infor;        // dado armazenado no nÛ
-    Reg *prox;        // ponteiro para o prÛximo nÛ
-} No;
+// Defini√ß√£o de um n√≥ da lista encadeada
+typedef struct Reg {  
+    int infor;                // armazena o valor do n√≥
+    Reg *prox;                // ponteiro para o pr√≥ximo n√≥ da lista
+} No;                         // cria um alias "No" para a struct Reg
 
 // Estrutura da pilha
 typedef struct TipoPilha {
-    No *Topo;         // ponteiro para o nÛ do topo da pilha
-    int tamanho;      // quantidade de elementos na pilha
-} Pilha;
+    No *Topo;                 // ponteiro para o topo da pilha (√∫ltimo elemento inserido)
+    int tamanho;              // contador para controlar quantos elementos existem na pilha
+} Pilha;                      // cria um alias "Pilha" para a struct TipoPilha
 
-// FunÁ„o para inicializar a pilha
+// Fun√ß√£o para inicializar a pilha
 void inicializarPilha(Pilha *p) {
-    p->Topo = NULL;  // no inÌcio a pilha est· vazia
-    p->tamanho = 0;
+    p->Topo = NULL;           // inicializa o topo como NULL (pilha vazia)
+    p->tamanho = 0;           // inicializa o tamanho como 0
 }
 
-// a) Inserir elementos (push)
+// Inserir elementos (push)
 void push(Pilha *p, int valor) {
-    No *novo = new No;        // cria novo nÛ dinamicamente
-    novo->infor = valor;      // armazena o valor
-    novo->prox = p->Topo;     // faz o novo nÛ apontar para o antigo topo
-    p->Topo = novo;           // atualiza o topo para o novo nÛ
-    p->tamanho++;
-    cout << "Elemento " << valor << " inserido na pilha.\n";
+    No *novo = new No;        // aloca dinamicamente um novo n√≥
+    novo->infor = valor;      // armazena o valor no novo n√≥
+    novo->prox = p->Topo;     // faz o novo n√≥ apontar para o topo atual
+    p->Topo = novo;           // atualiza o topo da pilha para o novo n√≥
+    p->tamanho++;             // incrementa o tamanho da pilha
+    cout << "Elemento " << valor << " inserido na pilha.\n"; // mensagem de sucesso
 }
 
-// b) Excluir elementos (pop)
+// Remover elementos (pop)
 int pop(Pilha *p) {
-    if (p->Topo == NULL) {   // se a pilha est· vazia
+    if (p->Topo == NULL) {    // verifica se a pilha est√° vazia
         cout << "Pilha vazia, nada a remover.\n";
-        return -1;  // valor de erro
+        return -1;            // retorna -1 se n√£o houver elementos
     }
-    No *remover = p->Topo;      // nÛ a ser removido
-    int valor = remover->infor; // guarda o valor
-    p->Topo = remover->prox;    // atualiza o topo
-    delete remover;             // libera memÛria
-    p->tamanho--;
-    cout << "Elemento " << valor << " removido da pilha.\n";
-    return valor;
+    No *remover = p->Topo;    // ponteiro tempor√°rio para o n√≥ que ser√° removido
+    int valor = remover->infor; // armazena o valor do n√≥ removido
+    p->Topo = remover->prox;  // atualiza o topo para o pr√≥ximo n√≥
+    delete remover;           // libera a mem√≥ria do n√≥ removido
+    p->tamanho--;             // decrementa o tamanho da pilha
+    cout << "Elemento " << valor << " removido da pilha.\n"; // mensagem de sucesso
+    return valor;             // retorna o valor removido
 }
 
-// c) Listar conte˙do da pilha
+// Listar conte√∫do da pilha
 void listar(Pilha *p) {
-    if (p->Topo == NULL) {               // se n„o h· elementos (pilha vazia)
-        cout << "A pilha esta vazia.\n";    // mensagem de aviso
-        return;                             // sai da funÁ„o
+    if (p->Topo == NULL) {    // verifica se a pilha est√° vazia
+        cout << "A pilha esta vazia.\n";
+        return;               // sai da fun√ß√£o
     }
     
     cout << "Conteudo da pilha (do topo para base): ";
-    No *aux = p->Topo;                      // ponteiro auxiliar comeÁa no topo
-    while (aux != NULL) {                // enquanto n„o chegar no fim da lista
-        cout << aux->infor << " ";          // imprime o valor do nÛ atual
-        aux = aux->prox;                    // avanÁa para o prÛximo nÛ
+    No *aux = p->Topo;        // ponteiro auxiliar para percorrer a pilha
+    while (aux != NULL) {     // enquanto n√£o chegar ao final
+        cout << aux->infor << " "; // mostra o valor do n√≥
+        aux = aux->prox;           // passa para o pr√≥ximo n√≥
     }
-    cout << endl;                           // quebra de linha no final
+    cout << endl;              // quebra de linha ap√≥s imprimir todos os elementos
 }
 
-// d) Verificar se um dado elemento est· presente na pilha
+// Buscar elemento na pilha
 bool buscar(Pilha *p, int valor) {
-    No *aux = p->Topo;                      // comeÁa a busca a partir do topo
-    while (aux != NULL) {                // percorre enquanto houver nÛs
-        if (aux->infor == valor) {          // se encontrou o valor
+    No *aux = p->Topo;        // ponteiro auxiliar para percorrer a pilha
+    while (aux != NULL) {     // enquanto houver n√≥s
+        if (aux->infor == valor) { // se encontrar o valor
             cout << "Elemento " << valor 
                  << " encontrado na pilha.\n";
-            return true;                    // retorna verdadeiro
+            return true;       // retorna verdadeiro
         }
-        aux = aux->prox;                    // avanÁa para o prÛximo nÛ
+        aux = aux->prox;       // avan√ßa para o pr√≥ximo n√≥
     }
-    // Se percorreu toda a pilha e n„o achou
     cout << "Elemento " << valor << " NAO encontrado na pilha.\n";
-    return false;                           // retorna falso
+    return false;              // retorna falso se n√£o encontrar
 }
 
-// FunÁ„o principal para testar
+// Fun√ß√£o principal com menu
 int main() {
-    Pilha p;                     // declara uma pilha chamada "p"
-    inicializarPilha(&p);        // inicializa a pilha (Topo = nullptr, tamanho = 0)
+    Pilha p;                   // declara uma pilha
+    inicializarPilha(&p);      // inicializa a pilha
 
-    // Inserindo elementos na pilha
-    push(&p, 10);                // insere o n˙mero 10 no topo
-    push(&p, 20);                // insere o n˙mero 20 no topo
-    push(&p, 30);                // insere o n˙mero 30 no topo
-                                 // agora a pilha est· assim (Topo -> Base): 30, 20, 10
+    int opcao, valor;          // vari√°veis para armazenar op√ß√£o do menu e valor
 
-    listar(&p);                  // lista os elementos da pilha: 30 20 10
+    do {
+        cout << "\n===== MENU PILHA =====\n";
+        cout << "1 - Inserir elemento (push)\n";
+        cout << "2 - Remover elemento (pop)\n";
+        cout << "3 - Listar pilha\n";
+        cout << "4 - Buscar elemento\n";
+        cout << "0 - Sair\n";
+        cout << "Escolha uma opcao: ";
+        cin >> opcao;          // l√™ a op√ß√£o do usu√°rio
 
-    // Verifica se certos elementos est„o na pilha
-    buscar(&p, 20);              // procura o elemento 20 (vai encontrar)
-    buscar(&p, 40);              // procura o elemento 40 (n„o vai encontrar)
+        switch (opcao) {       // verifica a op√ß√£o escolhida
+            case 1:
+                cout << "Digite o valor a ser inserido: ";
+                cin >> valor;  // l√™ o valor
+                push(&p, valor);// chama a fun√ß√£o push
+                break;
+            case 2:
+                pop(&p);       // chama a fun√ß√£o pop
+                break;
+            case 3:
+                listar(&p);    // chama a fun√ß√£o listar
+                break;
+            case 4:
+                cout << "Digite o valor a buscar: ";
+                cin >> valor;  // l√™ o valor a buscar
+                buscar(&p, valor); // chama a fun√ß√£o buscar
+                break;
+            case 0:
+                cout << "Saindo...\n"; // mensagem ao sair
+                break;
+            default:
+                cout << "Opcao invalida!\n"; // mensagem para op√ß√£o inv√°lida
+        }
 
-    // Remove elemento do topo da pilha
-    pop(&p);                     // remove o 30 (que est· no topo)
-                                 // agora a pilha est· assim: 20, 10
+    } while (opcao != 0);      // repete o menu enquanto n√£o for sair
 
-    listar(&p);                  // lista novamente: 20 10
-
-    return 0;                    
+    return 0;                   
 }
