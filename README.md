@@ -1,6 +1,8 @@
 # Estruturas de Dados e Recursão em C++
 Repositório com implementações didáticas em C++ para estudo de recursão e estruturas de dados
 
+---
+
 Conteúdo:
 
 • Funções recursivas
