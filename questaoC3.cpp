@@ -1,133 +1,151 @@
-#include <iostream> 
-using namespace std;
+#include <iostream>       
+#include <limits>         
+using namespace std;      
 
-// Estrutura do nÛ da lista circular duplamente encadeada
-struct NO {
-    int info;    // valor armazenado no nÛ
-    NO* prox;    // ponteiro para o prÛximo nÛ
-    NO* ant;     // ponteiro para o nÛ anterior
+struct NO {               // Estrutura do n√≥ da lista circular duplamente encadeada
+    int info;             // Valor armazenado no n√≥
+    NO* prox;             // Ponteiro para o pr√≥ximo n√≥
+    NO* ant;              // Ponteiro para o n√≥ anterior
 };
 
-// Classe da lista circular duplamente encadeada
 class ListaCircular {
 private:
-    NO* inicio;   // ponteiro para o primeiro nÛ da lista
-    int tamanho;  // quantidade de elementos na lista
-
+    NO* inicio;           // Ponteiro para o primeiro n√≥ da lista
+    int tamanho;          // Contador de elementos da lista
 public:
-    // Construtor da lista
-    ListaCircular() {
-        inicio = NULL; // inicializa ponteiro de inÌcio como NULL (lista vazia)
-        tamanho = 0;   // inicializa tamanho como 0
+    ListaCircular() {     // Construtor: inicia lista vazia
+        inicio = NULL;    // Nenhum n√≥ na lista
+        tamanho = 0;      // Tamanho inicial = 0
     }
-
-    // Verifica se a lista est· vazia
-    bool ListaVazia() { 
-        return inicio == NULL; // retorna true se a lista estiver vazia
+    ~ListaCircular() {    // Destrutor: limpa a lista ao destruir objeto
+        limpar();         // Remove todos os n√≥s para liberar mem√≥ria
     }
-
-    // Inserir elemento no final da lista
-    void Inserir(int valor) {
-        NO* novo = new NO;  // cria um novo nÛ dinamicamente
-        novo->info = valor; // atribui o valor ao novo nÛ
-
-        if (ListaVazia()) { // se a lista estiver vazia
-            novo->prox = novo;  // prÛximo do novo nÛ aponta para ele mesmo
-            novo->ant = novo;   // anterior do novo nÛ aponta para ele mesmo
-            inicio = novo;      // o inÌcio da lista aponta para o novo nÛ
-        } else { // lista n„o vazia
-            NO* fim = inicio->ant; // ˙ltimo nÛ da lista
-            fim->prox = novo;      // ˙ltimo nÛ aponta para o novo
-            novo->ant = fim;       // novo nÛ aponta para o ˙ltimo nÛ
-            novo->prox = inicio;   // novo nÛ aponta para o inÌcio
-            inicio->ant = novo;    // inÌcio aponta para o novo nÛ
+    bool ListaVazia() {   // Verifica se a lista est√° vazia
+        return inicio == NULL;
+    }
+    void Inserir(int valor) {  // Insere elemento no final da lista
+        NO* novo = new NO;     // Cria novo n√≥
+        novo->info = valor;    // Atribui valor ao n√≥
+        if (ListaVazia()) {    // Lista vazia: novo n√≥ aponta para si mesmo
+            novo->prox = novo;
+            novo->ant = novo;
+            inicio = novo;     // In√≠cio aponta para o novo n√≥
+        } else {               // Lista com elementos
+            NO* fim = inicio->ant;  // √öltimo n√≥
+            fim->prox = novo;       // √öltimo n√≥ aponta para novo
+            novo->ant = fim;        // Novo n√≥ aponta para antigo fim
+            novo->prox = inicio;    // Novo n√≥ aponta para in√≠cio
+            inicio->ant = novo;     // In√≠cio aponta para novo
         }
-
-        tamanho++; // atualiza o tamanho da lista
+        tamanho++;             // Incrementa contador
+        cout << "Inserido: " << valor << endl;  // Mensagem de confirma√ß√£o
     }
-
-    // Remover elemento da lista pelo valor
-    void Remover(int valor) {
-        if (ListaVazia()) { // lista vazia
+    void Remover(int valor) {     // Remove n√≥ por valor
+        if (ListaVazia()) {       // Lista vazia
             cout << "Lista vazia!" << endl;
             return;
         }
-
-        NO* temp = inicio;    // comeÁa a percorrer do inÌcio
-        bool encontrado = false; // flag para saber se encontrou o valor
-
-        // percorre todos os nÛs (uma volta completa)
-        for (int i = 0; i < tamanho; i++) {
-            if (temp->info == valor) { // valor encontrado
-                encontrado = true;
-                break;
-            }
-            temp = temp->prox; // vai para prÛximo nÛ
+        NO* temp = inicio;        // Come√ßa do in√≠cio
+        bool encontrado = false;  // Flag para verificar se o elemento existe
+        for (int i = 0; i < tamanho; i++) {   // Percorre a lista uma vez
+            if (temp->info == valor) { encontrado = true; break; }
+            temp = temp->prox;
         }
-
-        if (!encontrado) { // valor n„o encontrado
+        if (!encontrado) {        // Elemento n√£o encontrado
             cout << "Elemento " << valor << " NAO encontrado!" << endl;
             return;
         }
-
-        // caso a lista tenha apenas um nÛ
-        if (temp->prox == temp && temp->ant == temp) {
-            delete temp;      // libera memÛria
-            inicio = NULL;    // lista fica vazia
-        } else { // lista com mais de um nÛ
-            temp->ant->prox = temp->prox; // nÛ anterior aponta para prÛximo
-            temp->prox->ant = temp->ant; // nÛ prÛximo aponta para anterior
-
-            if (temp == inicio) // se for o inÌcio, atualiza inÌcio
-                inicio = temp->prox;
-
-            delete temp; // libera memÛria do nÛ removido
+        if (tamanho == 1) {       // √önico n√≥
+            delete temp;          // Libera mem√≥ria
+            inicio = NULL;        // Lista fica vazia
+        } else {                   // Mais de um n√≥
+            temp->ant->prox = temp->prox;  // N√≥ anterior aponta para o pr√≥ximo
+            temp->prox->ant = temp->ant;  // N√≥ pr√≥ximo aponta para o anterior
+            if (temp == inicio) inicio = temp->prox; // Atualiza in√≠cio se necess√°rio
+            delete temp;           // Libera mem√≥ria
         }
-
-        tamanho--; // atualiza tamanho da lista
+        tamanho--;                 // Decrementa contador
+        cout << "Removido: " << valor << endl;  // Mensagem de confirma√ß√£o
     }
-
-    // Imprimir todos os elementos da lista
-    void Imprimir() {
-        if (ListaVazia()) { // lista vazia
+    void Imprimir() {            // Imprime todos os elementos da lista
+        if (ListaVazia()) {
             cout << "Lista vazia!" << endl;
             return;
         }
-
-        NO* temp = inicio; // comeÁa do inÌcio
+        NO* temp = inicio;       // Come√ßa do in√≠cio
         cout << "Lista: ";
-        for (int i = 0; i < tamanho; i++) { // percorre uma volta completa
-            cout << temp->info << " "; // imprime valor do nÛ
-            temp = temp->prox;         // avanÁa para o prÛximo nÛ
+        for (int i = 0; i < tamanho; i++) {   // Percorre todos os n√≥s
+            cout << temp->info << " ";        // Imprime valor
+            temp = temp->prox;                // Avan√ßa para o pr√≥ximo n√≥
         }
         cout << endl;
     }
+    int Tamanho() {              // Retorna o tamanho da lista
+        return tamanho;
+    }
+    void limpar() {              // Limpa todos os elementos da lista
+        while (!ListaVazia()) {  // Enquanto a lista n√£o estiver vazia
+            Remover(inicio->info); // Remove o in√≠cio repetidamente
+        }
+    }
 };
 
-// FunÁ„o principal para testar a lista
 int main() {
-    ListaCircular lista; // cria objeto da lista circular
+    ListaCircular lista;         // Cria objeto da lista
+    int opcao, valor;            // Vari√°veis para menu e valores
 
-    // inserÁıes de teste
-    lista.Inserir(10); // inserir 10
-    lista.Inserir(20); // inserir 20
-    lista.Inserir(30); // inserir 30
-    lista.Imprimir();  // esperado: 10 20 30
+    do {
+        cout << "\n=== MENU LISTA CIRCULAR DUPLA ===\n";
+        cout << "1 - Inserir no final\n";
+        cout << "2 - Remover por valor\n";
+        cout << "3 - Imprimir\n";
+        cout << "4 - Mostrar tamanho\n";
+        cout << "5 - Limpar lista\n";
+        cout << "0 - Sair\n";
+        cout << "Escolha: ";
+        if (!(cin >> opcao)) {   // Valida entrada
+            cin.clear();         // Limpa erro do cin
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Ignora entrada inv√°lida
+            cout << "Entrada invalida.\n";
+            continue;
+        }
 
-    // remover elemento do meio
-    lista.Remover(20); 
-    lista.Imprimir(); // esperado: 10 30
+        switch (opcao) {          // Menu de op√ß√µes
+            case 1:
+                cout << "Valor a inserir: ";
+                while (!(cin >> valor)) { // Valida valor
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << "Valor invalido. Digite novamente: ";
+                }
+                lista.Inserir(valor);      // Insere valor
+                break;
+            case 2:
+                cout << "Valor a remover: ";
+                while (!(cin >> valor)) { // Valida valor
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << "Valor invalido. Digite novamente: ";
+                }
+                lista.Remover(valor);       // Remove valor
+                break;
+            case 3:
+                lista.Imprimir();           // Imprime lista
+                break;
+            case 4:
+                cout << "Tamanho: " << lista.Tamanho() << endl; // Mostra tamanho
+                break;
+            case 5:
+                lista.limpar();            // Limpa lista
+                cout << "Lista limpa.\n";
+                break;
+            case 0:
+                cout << "Saindo...\n";     // Encerra programa
+                break;
+            default:
+                cout << "Opcao invalida.\n"; // Op√ß√£o n√£o reconhecida
+        }
+    } while (opcao != 0);        // Repete at√© escolher 0
 
-    // remover elemento n„o existente
-    lista.Remover(50); // mensagem: n„o encontrado
-
-    // remover inÌcio
-    lista.Remover(10); 
-    lista.Imprimir(); // esperado: 30
-
-    // remover ˙ltimo elemento
-    lista.Remover(30); 
-    lista.Imprimir(); // esperado: lista vazia!
-
-    return 0;
+    return 0;                     
 }
