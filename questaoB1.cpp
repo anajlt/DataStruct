@@ -1,60 +1,106 @@
-#include <iostream> 
-using namespace std;
+#include <iostream>  
+using namespace std; 
 
-// Estrutura do n� da lista encadeada
+// Estrutura do nó da lista encadeada
 struct No {
-    int info;      // campo que guarda o valor do n�
-    No* proximo;   // ponteiro para o pr�ximo n� da lista
+    int info;        // Valor armazenado dentro do nó (pode ser um número, por exemplo)
+    No* proximo;     // Ponteiro que aponta para o próximo nó da lista
 };
 
-// Fun��o a) Criar uma lista vazia
+// a) Criar lista vazia
 No* criarLista() {
-    return NULL; // lista vazia: NULL = nao existe n� inicial
+    return NULL;     // Retorna NULL, indicando que a lista começa vazia (sem nós)
 }
 
-// Fun��o b) Inserir um elemento na lista (no in�cio)
-void inserirElemento(No*& lista, int valor) {
-    No* novo = new No;    // cria um novo n� na mem�ria
-    novo->info = valor;   // atribui o valor ao campo "info"
-    novo->proximo = lista; // faz o novo n� apontar para o primeiro n� atual
-    lista = novo;         // atualiza o ponteiro da lista para o novo n�
+// b) Inserir elemento (no inÃ­cio)
+void inserirElemento(No*& lista, int valor) { // "lista" é passada por referência (&) para atualizar o ponteiro original
+    No* novo = new No;        // Cria um novo nó dinamicamente na memória
+    novo->info = valor;       // Coloca o valor digitado dentro do nó
+    novo->proximo = lista;    // Faz o novo nó apontar para o antigo primeiro nó da lista
+    lista = novo;             // Atualiza o ponteiro da lista para que o novo nó seja o primeiro
 }
 
-// Fun��o c) Percorrer toda a lista e imprimir os elementos
+// c) Percorrer e imprimir lista
 void percorrerLista(No* lista) {
-    No* atual = lista;    // come�a pelo primeiro n� da lista
-    while (atual != NULL) { // enquanto n�o chegar ao fim da lista
-        cout << atual->info << " "; // imprime o valor do n� atual
-        atual = atual->proximo;     // avan�a para o pr�ximo n�
+    No* atual = lista;        // Cria um ponteiro auxiliar para percorrer a lista
+
+    if (atual == NULL) {      // Se a lista estiver vazia (sem nós)
+        cout << "Lista vazia.\n";
+        return;               // Sai da função
     }
-    cout << endl;         // quebra de linha ao final
+
+    // Enquanto ainda houver nós na lista...
+    while (atual != NULL) {
+        cout << atual->info << " ";  // Mostra o valor do nó atual
+        atual = atual->proximo;      // AvanÃ§a para o próximo nó
+    }
+
+    cout << endl; // Pula uma linha após mostrar todos os elementos
 }
 
-// Fun��o d) Retornar o n�mero de elementos da lista
+// d) Contar elementos
 int contarElementos(No* lista) {
-    int contador = 0;     // inicializa contador
-    No* atual = lista;    // come�a pelo primeiro n�
-    while (atual != NULL) { // percorre at� o fim da lista
-        contador++;       // conta um n�
-        atual = atual->proximo; // avan�a para o pr�ximo n�
+    int contador = 0;          // Contador começa em zero
+    No* atual = lista;         // Ponteiro auxiliar para percorrer a lista
+
+    while (atual != NULL) {    // Enquanto ainda houver nós na lista
+        contador++;            // Incrementa o contador
+        atual = atual->proximo; // Vai para o próximo nó
     }
-    return contador;      // retorna o total de n�s
+
+    return contador;           // Retorna o total de elementos contados
 }
 
+// Função para liberar memória
+void liberarLista(No*& lista) {
+    while (lista != NULL) {           // Enquanto a lista não estiver vazia
+        No* temp = lista;             // Guarda o nó atual em uma variável temporária
+        lista = lista->proximo;       // Faz a lista apontar para o próximo nó
+        delete temp;                  // Libera o nó atual da memória
+    }
+}
+
+// Função principal (onde o programa começa)
 int main() {
-    No* minhaLista = criarLista(); // criar lista vazia
+    No* minhaLista = criarLista(); // Cria a lista inicialmente vazia
+    int opcao, valor;              // Variáveis para guardar a escolha do menu e o valor digitado
 
-    // Inserindo elementos na lista
-    inserirElemento(minhaLista, 10); // inserir elemento 10
-    inserirElemento(minhaLista, 20); // inserir elemento 20
-    inserirElemento(minhaLista, 30); // inserir elemento 30
+    do { // Estrutura de repetição que exibe o menu até o usuário escolher sair
+        cout << "\n=== MENU ===\n";
+        cout << "1 - Inserir elemento\n";
+        cout << "2 - Mostrar elementos\n";
+        cout << "3 - Contar elementos\n";
+        cout << "0 - Sair\n";
+        cout << "Escolha: ";
+        cin >> opcao;              // Lê a opção do usuário
 
-    // Percorrer lista e mostrar elementos
-    cout << "Elementos da lista: ";
-    percorrerLista(minhaLista);
+        switch (opcao) {           // Verifica qual opção foi escolhida
+            case 1: // Inserir elemento
+                cout << "Digite o valor: ";
+                cin >> valor;                     // Lê o valor digitado
+                inserirElemento(minhaLista, valor); // Chama a função para inserir no iní­cio da lista
+                cout << "Valor inserido.\n";
+                break;
 
-    // Mostrar quantidade de elementos na lista
-    cout << "Numero de elementos na lista: " << contarElementos(minhaLista) << endl;
+            case 2: // Mostrar todos os elementos
+                cout << "Elementos da lista: ";
+                percorrerLista(minhaLista);        // Chama a função que percorre e imprime os elementos
+                break;
 
-    return 0; 
+            case 3: // Contar quantos elementos há na lista
+                cout << "Numero de elementos: " << contarElementos(minhaLista) << endl;
+                break;
+
+            case 0: // Sair do programa
+                cout << "Encerrando programa...\n";
+                break;
+
+            default: // Caso o usuário digite uma opção inválida
+                cout << "Opcao invalida.\n";
+        }
+
+    } while (opcao != 0); // O menu repete até o usuário escolher "0"
+
+    liberarLista(minhaLista); // Libera toda a memória ocupada pelos nãos antes de encerrar
+    return 0;                 
 }
