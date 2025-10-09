@@ -8,7 +8,7 @@ struct No {
     No* prox;
 };
 
-// FunÃ§Ã£o para imprimir a lista recursivamente
+// Função para imprimir a lista recursivamente
 void imprimir(No* lista) {
     if (lista == NULL) {
         cout << "(vazia)";
@@ -119,3 +119,4 @@ int main() {
     liberarLista(lista);
     return 0;
 }
+
