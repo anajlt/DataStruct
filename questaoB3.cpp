@@ -1,112 +1,168 @@
-#include <iostream>
-using namespace std;
+#include <iostream>      
+#include <limits>        
+using namespace std;     
 
-// DefiniÁ„o de um nÛ da lista encadeada
-typedef struct Reg {
-    int infor;        // dado armazenado no nÛ
-    Reg *prox;        // ponteiro para o prÛximo nÛ
-} No;
+// Estrutura do n√≥ da fila (cada elemento da fila)
+struct No {
+    int infor;   // Valor armazenado no n√≥
+    No* prox;    // Ponteiro para o pr√≥ximo n√≥ na fila
+};
 
 // Estrutura da fila
-typedef struct TipoFila {
-    No *frente;       // ponteiro para o primeiro elemento (inÌcio da fila)
-    No *tras;         // ponteiro para o ˙ltimo elemento (final da fila)
-    int tamanho;      // quantidade de elementos na fila
-} Fila;
+struct Fila {
+    No* frente;  // Ponteiro para o primeiro elemento da fila
+    No* tras;    // Ponteiro para o √∫ltimo elemento da fila
+    int tamanho; // Quantidade de elementos na fila
+};
 
-// Inicializar a fila
-void inicializarFila(Fila *f) {
-    f->frente = NULL;
-    f->tras = NULL;
-    f->tamanho = 0;
+// Inicializa a fila (deixa vazia)
+void inicializarFila(Fila* f) {
+    f->frente = NULL;  // N√£o h√° primeiro elemento
+    f->tras = NULL;    // N√£o h√° √∫ltimo elemento
+    f->tamanho = 0;    // Tamanho inicial √© zero
 }
 
-// a) Inserir elemento na fila (enqueue)
-void enqueue(Fila *f, int valor) {
-    No *novo = new No;          // cria novo nÛ
-    novo->infor = valor;        // guarda o valor
-    novo->prox = NULL;       // como ser· o ˙ltimo, prox = null
+// Fun√ß√£o para inserir elemento no final da fila (enqueue)
+void enqueue(Fila* f, int valor) {
+    No* novo = new No;  // Cria um novo n√≥ dinamicamente
+    novo->infor = valor; // Atribui o valor ao n√≥
+    novo->prox = NULL;   // Como ser√° o √∫ltimo n√≥, aponta para NULL
 
-    if (f->tras == NULL) {   // se a fila est· vazia
-        f->frente = novo;       // novo nÛ ser· o primeiro
+    // Se a fila est√° vazia, frente e tras apontam para o novo n√≥
+    if (f->tras == NULL) {
+        f->frente = novo;
     } else {
-        f->tras->prox = novo;   // ˙ltimo nÛ aponta para o novo
+        f->tras->prox = novo; // O √∫ltimo n√≥ atual aponta para o novo n√≥
     }
-    f->tras = novo;             // atualiza o "tras"
-    f->tamanho++;
-
+    f->tras = novo; // Atualiza o ponteiro "tras" para o novo n√≥
+    f->tamanho++;   // Incrementa o tamanho da fila
     cout << "Elemento " << valor << " inserido na fila.\n";
 }
 
-// b) Remover elemento da fila (dequeue)
-int dequeue(Fila *f) {
-    if (f->frente == NULL) {   // Fila vazia
+// Fun√ß√£o para remover elemento do in√≠¬≠cio da fila (dequeue)
+int dequeue(Fila* f) {
+    if (f->frente == NULL) { // Se a fila est√° vazia
         cout << "Fila vazia, nada a remover.\n";
-        return -1;
+        return -1;           // Retorna valor inv√°lido
     }
-    No *remover = f->frente;      // nÛ a ser removido È o da frente
-    int valor = remover->infor;   // guarda o valor
-    f->frente = remover->prox;    // avanÁa o ponteiro da frente
-    if (f->frente == NULL) {   // se a fila ficou vazia
-        f->tras = NULL;        // ajusta o tras tambÈm
+    No* remover = f->frente;       // Guarda o n√≥ que ser√° removido
+    int valor = remover->infor;    // Salva o valor para retornar
+    f->frente = remover->prox;     // Atualiza a frente para o pr√≥ximo n√≥
+    if (f->frente == NULL) {       // Se a fila ficou vazia
+        f->tras = NULL;            // Atualiza tamb√©m o ponteiro "tras"
     }
-    delete remover;               // libera memÛria
-    f->tamanho--;
+    delete remover;                // Libera a mem√≥ria do n√≥ removido
+    f->tamanho--;                  // Decrementa o tamanho da fila
     cout << "Elemento " << valor << " removido da fila.\n";
-    return valor;
+    return valor;                  // Retorna o valor removido
 }
 
-// c) Listar conte˙do da fila
-void listar(Fila *f) {
-    if (f->frente == NULL) {            // se n„o h· nenhum elemento na fila
-        cout << "A fila esta vazia.\n";    // imprime mensagem de fila vazia
-        return;                            // sai da funÁ„o
+// Fun√ß√£o para listar todos os elementos da fila
+void listar(Fila* f) {
+    if (f->frente == NULL) {       // Se a fila est√° vazia
+        cout << "A fila esta vazia.\n";
+        return;
     }
-
     cout << "Conteudo da fila (da frente para o final): ";
-    No *aux = f->frente;                   // ponteiro auxiliar comeÁa na frente da fila
-    while (aux != NULL) {               // percorre atÈ o final (prox == NULL)
-        cout << aux->infor << " ";         // imprime o valor armazenado no nÛ
-        aux = aux->prox;                   // avanÁa para o prÛximo nÛ
+    No* aux = f->frente;          // Auxiliar para percorrer a fila
+    while (aux != NULL) {          // Enquanto houver elementos
+        cout << aux->infor << " "; // Mostra o valor
+        aux = aux->prox;           // Passa para o pr√≥ximo n√≥
     }
-    cout << endl;                          // quebra de linha no final da impress„o
+    cout << endl;
 }
 
-// d) Verificar se um dado elemento est· presente na fila
-bool buscar(Fila *f, int valor) {
-    No *aux = f->frente;                   // comeÁa a busca pela frente da fila
-    while (aux != NULL) {               // percorre cada nÛ atÈ o final
-        if (aux->infor == valor) {         // se o valor do nÛ for o procurado
-            cout << "Elemento " << valor 
-                 << " encontrado na fila.\n";
-            return true;                   // retorna verdadeiro e encerra
+// Fun√ß√£o para buscar um valor na fila
+bool buscar(Fila* f, int valor) {
+    No* aux = f->frente;           // Auxiliar para percorrer a fila
+    while (aux != NULL) {           // Enquanto houver elementos
+        if (aux->infor == valor) {  // Se encontrar o valor
+            cout << "Elemento " << valor << " encontrado na fila.\n";
+            return true;
         }
-        aux = aux->prox;                   // avanÁa para o prÛximo nÛ
+        aux = aux->prox;           // Vai para o pr√≥ximo n√≥
     }
-    // se percorreu tudo e n„o achou
     cout << "Elemento " << valor << " NAO encontrado na fila.\n";
-    return false;                          // retorna falso
+    return false;                   // Retorna falso se n√£o encontrou
 }
 
-// FunÁ„o principal para testar
+// Fun√ß√£o para liberar toda a mem√≥ria da fila
+void liberarFila(Fila* f) {
+    while (f->frente != NULL) {     // Enquanto houver elementos
+        No* tmp = f->frente;       // Guarda o n√≥ atual
+        f->frente = f->frente->prox; // Avan√ßa para o pr√≥ximo n√≥
+        delete tmp;                // Libera a mem√≥ria do n√≥ antigo
+    }
+    f->tras = NULL;                 // Ponteiro "tras" tamb√©m fica NULL
+    f->tamanho = 0;                 // Tamanho volta a zero
+}
+
+// Fun√ß√£o principal
 int main() {
-    Fila f;                     // declara uma fila chamada "f"
-    inicializarFila(&f);        // inicializa a fila (frente e tras = NULL, tamanho = 0)
+    Fila f;                        // Declara a fila
+    inicializarFila(&f);           // Inicializa a fila vazia
 
-    enqueue(&f, 10);            // insere o n˙mero 10 na fila
-    enqueue(&f, 20);            // insere o n˙mero 20 na fila (vem depois do 10)
-    enqueue(&f, 30);            // insere o n˙mero 30 na fila (vem depois do 20)
-                                // estado atual da fila: frente -> 10, 20, 30 <- tras
+    int opcao;                     // Armazena a op√ß√£o do usu√°rio
+    int valor;                     
 
-    listar(&f);                 // mostra o conte˙do da fila: 10 20 30
+    do {
+        // Menu de op√ß√µes
+        cout << "\n=== MENU FILA ===\n";
+        cout << "1 - Inserir\n";
+        cout << "2 - Remover\n";
+        cout << "3 - Listar\n";
+        cout << "4 - Buscar elemento\n";
+        cout << "5 - Mostrar tamanho\n";
+        cout << "0 - Sair\n";
+        cout << "Escolha: ";
 
-    buscar(&f, 20);             // procura o elemento 20 (vai encontrar)
-    buscar(&f, 40);             // procura o elemento 40 (n„o est· na fila)
+        // Valida√ß√£o da entrada
+        if (!(cin >> opcao)) {         
+            cin.clear();              
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
+            cout << "Entrada invalida. Tente novamente.\n";
+            continue;
+        }
 
-    dequeue(&f);                // remove o primeiro elemento (10)
-                                // agora a fila fica: 20, 30
+        // Executa a√ß√£o de acordo com a op√ß√£o
+        switch (opcao) {
+            case 1:
+                cout << "Digite o valor a inserir: ";
+                if (cin >> valor) {       // Valida entrada
+                    enqueue(&f, valor);   // Chama fun√ß√£o para inserir
+                } else {
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << "Valor invalido.\n";
+                }
+                break;
+            case 2:
+                dequeue(&f);             // Chama fun√ß√£o para remover
+                break;
+            case 3:
+                listar(&f);              // Chama fun√ß√£o para listar
+                break;
+            case 4:
+                cout << "Valor a buscar: ";
+                if (cin >> valor) {
+                    buscar(&f, valor);   // Chama fun√ß√£o de busca
+                } else {
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << "Valor invalido.\n";
+                }
+                break;
+            case 5:
+                cout << "Tamanho da fila: " << f.tamanho << endl;
+                break;
+            case 0:
+                cout << "Encerrando e liberando memoria...\n";
+                break;
+            default:
+                cout << "Opcao invalida.\n";
+        }
+    } while (opcao != 0);           // Repete at√© o usu√°rio digitar 0
 
-    listar(&f);                 // mostra novamente o conte˙do: 20 30
-
-    return 0;                   
+    liberarFila(&f);                 // Libera toda a mem√≥ria da fila
+    return 0;                        
 }
