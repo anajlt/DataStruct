@@ -1,85 +1,51 @@
-#include <iostream> 
-using namespace std;
+#include <iostream>        
+#include <limits>          
+using namespace std;       
 
-// Estrutura do nó da lista duplamente encadeada
+// Estrutura do nÃ³ da lista duplamente encadeada
 struct NO {
-    int info;    // valor armazenado no nó
-    NO* prox;    // ponteiro para o próximo nó da lista
-    NO* ant;     // ponteiro para o nó anterior da lista
+    int info;              // Armazena o valor do nÃ³
+    NO* prox;              // Ponteiro para o prÃ³ximo nÃ³
+    NO* ant;               // Ponteiro para o nÃ³ anterior
 };
 
-// Classe da lista duplamente encadeada
+// Classe que representa a lista duplamente encadeada
 class ListaDupla {
 private:
-    NO* inicio;   // ponteiro para o início da lista
-    NO* fim;      // ponteiro para o fim da lista
-    int tamanho;  // quantidade de elementos na lista
+    NO* inicio;            // Ponteiro para o primeiro nÃ³ da lista
+    NO* fim;               // Ponteiro para o Ãºltimo nÃ³ da lista
+    int tamanho;           // Contador do nÃºmero de elementos
 
-    // Função auxiliar privada para busca recursiva
+    // FunÃ§Ã£o auxiliar recursiva para buscar valor
     NO* BuscarRecAux(NO* no, int valor) {
-        if (no == NULL) return NULL;   // caso base: fim da lista, retorna NULL
-        if (no->info == valor) return no; // encontrou o valor, retorna o nó
-        return BuscarRecAux(no->prox, valor); // chamada recursiva para o próximo nó
+        if (no == NULL) return NULL;       // Caso base: nÃ³ nulo, nÃ£o encontrou
+        if (no->info == valor) return no;  // Encontrou o valor, retorna ponteiro do nÃ³
+        return BuscarRecAux(no->prox, valor); // Chamada recursiva para o prÃ³ximo nÃ³
     }
 
 public:
     // Construtor da lista
     ListaDupla() {
-        inicio = fim = NULL; // inicializa ponteiros como NULL
-        tamanho = 0;         // inicializa tamanho da lista como zero
+        inicio = fim = NULL;   // Inicializa lista vazia
+        tamanho = 0;           // Inicializa tamanho como zero
     }
 
-    // Verifica se a lista está vazia
-    bool ListaVaziaLD() { 
-        return inicio == NULL; 
+    // Destrutor da lista para liberar memÃ³ria
+    ~ListaDupla() {
+        NO* aux = inicio;
+        while (aux != NULL) {             // Percorre todos os nÃ³s
+            NO* tmp = aux->prox;         // Guarda ponteiro para prÃ³ximo nÃ³
+            delete aux;                  // Libera memÃ³ria do nÃ³ atual
+            aux = tmp;                   // Vai para o prÃ³ximo nÃ³
+        }
     }
 
-    // Inserir elemento no início da lista
-    // Evita duplicatas
+    // Verifica se a lista estÃ¡ vazia
+    bool ListaVaziaLD() { return inicio == NULL; }
+
+    // Insere elemento no inÃ­cio da lista
     void InserirInicioLD(int k) {
-        // percorre a lista para verificar duplicata
-        NO* temp = inicio;
-        while (temp != NULL) {
-            if (temp->info == k) {  // se já existir
-                cout << "Elemento " << k << " ja existe na lista!" << endl;
-                return; // sai sem inserir
-            }
-            temp = temp->prox; // avança para o próximo nó
-        }
-
-        // Cria um novo nó
-        NO* novo = new NO;
-        novo->info = k;   // atribui valor
-        novo->ant = NULL; // como será o primeiro, não tem anterior
-
-        // Inserção
-        if (ListaVaziaLD()) { // lista vazia
-            novo->prox = NULL;
-            inicio = fim = novo; // primeiro e único nó
-        } else { // lista com elementos
-            novo->prox = inicio; // próximo do novo aponta para antigo início
-            inicio->ant = novo;  // anterior do antigo início aponta para o novo
-            inicio = novo;       // atualiza início da lista
-        }
-
-        tamanho++; // atualiza tamanho
-    }
-
-    // Inserir elemento em qualquer posição
-    void InserirPosicao(int k, int pos) {
-        // verifica posição válida
-        if (pos < 0 || pos > tamanho) {
-            cout << "Posição inválida!" << endl;
-            return;
-        }
-
-        // Se posição 0, chama inserção no início
-        if (pos == 0) {
-            InserirInicioLD(k);
-            return;
-        }
-
-        // Verificar duplicata
+        // Evita duplicatas
         NO* temp = inicio;
         while (temp != NULL) {
             if (temp->info == k) {
@@ -89,114 +55,232 @@ public:
             temp = temp->prox;
         }
 
-        // Criar novo nó
-        NO* novo = new NO;
-        novo->info = k;
+        NO* novo = new NO;   // Cria novo nÃ³
+        novo->info = k;      // Atribui valor
+        novo->ant = NULL;    // Como serÃ¡ o primeiro nÃ³, nÃ£o tem anterior
 
-        // Percorrer até o nó anterior à posição desejada
-        temp = inicio;
-        for (int i = 0; i < pos - 1; i++)
-            temp = temp->prox;
-
-        // Ajustar ponteiros para inserir no meio ou final
-        novo->prox = temp->prox;
-        novo->ant = temp;
-        if (temp->prox != NULL)
-            temp->prox->ant = novo; // próximo nó aponta para o novo
-        else
-            fim = novo; // atualiza fim se inserir no final
-        temp->prox = novo;
-
-        tamanho++; // atualiza tamanho
+        if (ListaVaziaLD()) {  // Lista vazia
+            novo->prox = NULL;
+            inicio = fim = novo;
+        } else {                // Lista com elementos
+            novo->prox = inicio;  // Aponta para o nÃ³ atual inicial
+            inicio->ant = novo;   // NÃ³ inicial atual aponta para novo nÃ³
+            inicio = novo;        // Atualiza ponteiro inicio
+        }
+        tamanho++;               // Incrementa tamanho
+        cout << "Elemento " << k << " inserido no inicio." << endl;
     }
 
-    // Imprimir todos os elementos da lista
-    void Imprimir() {
-        NO* temp = inicio;  // começa do início
-        cout << "Lista: ";
+    // Insere elemento em uma posiÃ§Ã£o especÃ­fica
+    void InserirPosicao(int k, int pos) {
+        if (pos < 0 || pos > tamanho) { // Valida posiÃ§Ã£o
+            cout << "Posicao invalida!" << endl;
+            return;
+        }
+
+        if (pos == 0) { // Se for no inÃ­cio
+            InserirInicioLD(k);
+            return;
+        }
+
+        // Evita duplicata
+        NO* temp = inicio;
         while (temp != NULL) {
-            cout << temp->info << " "; // imprime valor do nó
-            temp = temp->prox;         // vai para próximo nó
+            if (temp->info == k) {
+                cout << "Elemento " << k << " ja existe na lista!" << endl;
+                return;
+            }
+            temp = temp->prox;
+        }
+
+        NO* novo = new NO;   // Cria novo nÃ³
+        novo->info = k;
+
+        temp = inicio;
+        for (int i = 0; i < pos - 1; i++)   // Percorre atÃ© o nÃ³ anterior Ã  posiÃ§Ã£o desejada
+            temp = temp->prox;
+
+        novo->prox = temp->prox;  // PrÃ³ximo do novo nÃ³ serÃ¡ o prÃ³ximo do temp
+        novo->ant = temp;         // Anterior do novo nÃ³ Ã© temp
+
+        if (temp->prox != NULL)       // Se nÃ£o for inserido no final
+            temp->prox->ant = novo;   // PrÃ³ximo nÃ³ aponta para novo nÃ³ como anterior
+        else
+            fim = novo;               // Se for final, atualiza ponteiro fim
+
+        temp->prox = novo;            // temp aponta para novo nÃ³
+        tamanho++;                    // Incrementa tamanho
+        cout << "Elemento " << k << " inserido na posicao " << pos << "." << endl;
+    }
+
+    // Imprime a lista
+    void Imprimir() {
+        if (ListaVaziaLD()) {
+            cout << "Lista vazia." << endl;
+            return;
+        }
+        NO* temp = inicio;
+        cout << "Lista: ";
+        while (temp != NULL) {       // Percorre todos os nÃ³s
+            cout << temp->info << " "; 
+            temp = temp->prox;
         }
         cout << endl;
     }
 
-    // Busca recursiva de elemento
-    NO* BuscarRec(int valor) {
-        return BuscarRecAux(inicio, valor); // chama função auxiliar
+    // Busca recursiva de um valor na lista
+    NO* BuscarRec(int valor) { return BuscarRecAux(inicio, valor); }
+
+    // Retorna posiÃ§Ã£o do valor na lista (-1 se nÃ£o encontrado)
+    int BuscarPos(int valor) {
+        NO* temp = inicio;
+        int i = 0;
+        while (temp != NULL) {
+            if (temp->info == valor) return i;
+            temp = temp->prox;
+            i++;
+        }
+        return -1;
     }
 
-    // Excluir elemento em qualquer posição
+    // Exclui nÃ³ em determinada posiÃ§Ã£o
     void Excluir(int pos) {
-        if (ListaVaziaLD()) { // lista vazia
+        if (ListaVaziaLD()) {
             cout << "Lista vazia!" << endl;
             return;
         }
-
-        if (pos < 0 || pos >= tamanho) { // posição inválida
-            cout << "Posição inválida!" << endl;
+        if (pos < 0 || pos >= tamanho) {
+            cout << "Posicao invalida!" << endl;
             return;
         }
 
         NO* temp = inicio;
 
-        // Excluir primeiro nó
-        if (pos == 0) {
-            inicio = temp->prox;   // atualiza início
+        if (pos == 0) {  // Excluir do inÃ­cio
+            inicio = temp->prox;
             if (inicio != NULL)
-                inicio->ant = NULL; // ajusta anterior
+                inicio->ant = NULL;
             else
-                fim = NULL;         // lista ficou vazia
-            delete temp;             // libera memória
+                fim = NULL;  // Lista ficou vazia
+            delete temp;
             tamanho--;
+            cout << "Elemento da posicao 0 excluido." << endl;
             return;
         }
 
-        // Percorrer até a posição desejada
         for (int i = 0; i < pos; i++)
-            temp = temp->prox;
+            temp = temp->prox;  // Percorre atÃ© a posiÃ§Ã£o
 
-        // Ajustar ponteiros dos nós vizinhos
         if (temp->ant != NULL)
-            temp->ant->prox = temp->prox;
+            temp->ant->prox = temp->prox;  // NÃ³ anterior aponta para prÃ³ximo
         if (temp->prox != NULL)
-            temp->prox->ant = temp->ant;
+            temp->prox->ant = temp->ant;   // PrÃ³ximo nÃ³ aponta para anterior
         else
-            fim = temp->ant; // atualiza fim se for o último
+            fim = temp->ant;               // Se for Ãºltimo, atualiza fim
 
-        delete temp; // libera memória do nó
-        tamanho--;
+        delete temp;                        // Libera memÃ³ria
+        tamanho--;                           // Atualiza tamanho
+        cout << "Elemento da posicao " << pos << " excluido." << endl;
     }
 
-    // Retorna o tamanho atual da lista
-    int Tamanho() { return tamanho; }
+    int Tamanho() { return tamanho; }       // Retorna tamanho da lista
 };
 
-// Função principal para testar a lista
+// FunÃ§Ã£o principal
 int main() {
-    ListaDupla lista; // cria objeto da lista
+    ListaDupla lista;  // Cria objeto lista
+    int opcao;
 
-    // Inserções no início
-    lista.InserirInicioLD(10); 
-    lista.InserirInicioLD(20); 
+    do { // Loop do menu
+        cout << "\n=== MENU LISTA DUPLA ===\n";
+        cout << "1 - Inserir no inicio\n";
+        cout << "2 - Inserir em posicao\n";
+        cout << "3 - Imprimir\n";
+        cout << "4 - Buscar valor (recursivo)\n";
+        cout << "5 - Buscar posicao do valor\n";
+        cout << "6 - Excluir por posicao\n";
+        cout << "7 - Mostrar tamanho\n";
+        cout << "0 - Sair\n";
+        cout << "Escolha: ";
 
-    // Inserção no meio
-    lista.InserirPosicao(15, 1); 
-    lista.Imprimir(); // esperado: 20 15 10
+        if (!(cin >> opcao)) {   // Valida entrada
+            cin.clear();          // Limpa flag de erro
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Descarta entrada invÃ¡lida
+            cout << "Entrada invalida. Tente novamente." << endl;
+            continue;
+        }
 
-    // Tentativa de duplicata
-    lista.InserirInicioLD(15); // mensagem: já existe
+        int valor, pos; 
+        switch (opcao) {
+            case 1:
+                cout << "Valor a inserir no inicio: ";
+                while (!(cin >> valor)) { // Valida entrada
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << "Valor invalido. Digite novamente: ";
+                }
+                lista.InserirInicioLD(valor);
+                break;
+            case 2:
+                cout << "Valor a inserir: ";
+                while (!(cin >> valor)) { // Valida valor
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << "Valor invalido. Digite novamente: ";
+                }
+                cout << "Posicao (0 = inicio): ";
+                while (!(cin >> pos)) { // Valida posiÃ§Ã£o
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << "Posicao invalida. Digite novamente: ";
+                }
+                lista.InserirPosicao(valor, pos);
+                break;
+            case 3:
+                lista.Imprimir(); // Imprime lista
+                break;
+            case 4:
+                cout << "Valor a buscar (recursivo): ";
+                while (!(cin >> valor)) { // Valida entrada
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << "Valor invalido. Digite novamente: ";
+                }
+                if (lista.BuscarRec(valor) != NULL)
+                    cout << "Elemento " << valor << " encontrado." << endl;
+                else
+                    cout << "Elemento " << valor << " NAO encontrado." << endl;
+                break;
+            case 5:
+                cout << "Valor a buscar a posicao: ";
+                while (!(cin >> valor)) { // Valida entrada
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << "Valor invalido. Digite novamente: ";
+                }
+                pos = lista.BuscarPos(valor);
+                if (pos >= 0) cout << "Valor encontrado na posicao " << pos << "." << endl;
+                else cout << "Valor NAO encontrado." << endl;
+                break;
+            case 6:
+                cout << "Posicao a excluir (0 = inicio): ";
+                while (!(cin >> pos)) { // Valida posiÃ§Ã£o
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << "Posicao invalida. Digite novamente: ";
+                }
+                lista.Excluir(pos); // Exclui elemento
+                break;
+            case 7:
+                cout << "Tamanho da lista: " << lista.Tamanho() << endl;
+                break;
+            case 0:
+                cout << "Saindo..." << endl;
+                break;
+            default:
+                cout << "Opcao invalida." << endl;
+        }
+    } while (opcao != 0); // Repete atÃ© sair
 
-    // Busca recursiva
-    NO* encontrado = lista.BuscarRec(15);
-    if (encontrado != NULL)
-        cout << "Elemento 15 encontrado!" << endl;
-    else
-        cout << "Elemento 15 não encontrado!" << endl;
-
-    // Exclusão de elemento da posição 1
-    lista.Excluir(1); 
-    lista.Imprimir(); // esperado: 20 10
-
-    return 0;
+    return 0; 
 }
