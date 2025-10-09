@@ -1,73 +1,121 @@
 #include <iostream>
+#include <limits> // necessÃ¡rio para numeric_limits
 using namespace std;
 
-// Definição da estrutura do nó da lista encadeada
+// Estrutura de um nÃ£o da lista encadeada
 struct No {
-    int info;   // valor armazenado no nó
-    No* prox;   // ponteiro para o próximo nó
+    int info;
+    No* prox;
 };
 
-// a) Imprimir lista recursivamente
+// FunÃƒÂ§ÃƒÂ£o para imprimir a lista recursivamente
 void imprimir(No* lista) {
-    if (lista == NULL) return;        // caso base: se a lista está vazia, para
-    cout << lista->info << " ";       // imprime o valor do nó atual
-    imprimir(lista->prox);            // chama recursivamente para o próximo nó
-}
-
-// b) Buscar elemento recursivamente
-bool buscar(No* lista, int x) {
-    if (lista == NULL) return false;   // caso base: chegou ao fim e não encontrou
-    if (lista->info == x) return true; // se encontrou o valor, retorna verdadeiro
-    return buscar(lista->prox, x);     // continua buscando no restante da lista
-}
-
-// c) Excluir elemento recursivamente
-No* excluir(No* lista, int x) {
-    if (lista == NULL) return NULL;  // caso base: lista vazia, não há o que excluir
-
-    if (lista->info == x) {          // se encontrou o elemento
-        No* temp = lista->prox;      // salva o próximo nó
-        delete lista;                // libera a memória do nó atual
-        return temp;                 // retorna o próximo como novo início da lista
+    if (lista == NULL) {
+        cout << "(vazia)";
+        return;
     }
+    cout << lista->info << " ";
+    imprimir(lista->prox);
+}
 
-    // caso contrário, ajusta o ponteiro prox e continua recursivamente
+// FunÃ§Ã£o para buscar um valor na lista (recursiva)
+bool buscar(No* lista, int x) {
+    if (lista == NULL) return false;
+    if (lista->info == x) return true;
+    return buscar(lista->prox, x);
+}
+
+// FunÃ§Ã£o para excluir a primeira ocorrÃªncia de um valor na lista
+No* excluir(No* lista, int x) {
+    if (lista == NULL) return NULL;
+    if (lista->info == x) {
+        No* temp = lista->prox;
+        delete lista;
+        return temp;
+    }
     lista->prox = excluir(lista->prox, x);
-    return lista; // retorna a cabeça da lista (pode ter mudado ou não)
+    return lista;
 }
 
-// Função auxiliar para inserir elemento no início da lista
+// FunÃ§Ã£o para inserir um novo valor no inÃ­Â­cio da lista
 No* inserir(No* lista, int x) {
-    No* novo = new No();  // cria um novo nó dinamicamente
-    novo->info = x;       // atribui o valor ao nó
-    novo->prox = lista;   // aponta o novo nó para o antigo início
-    return novo;          // retorna o novo nó como início da lista
+    No* novo = new No();
+    novo->info = x;
+    novo->prox = lista;
+    return novo;
 }
 
-// Programa principal para testar as funções
+// FunÃ§Ã£o para liberar toda a memÃ³ria da lista
+void liberarLista(No* lista) {
+    while (lista != NULL) {
+        No* temp = lista->prox;
+        delete lista;
+        lista = temp;
+    }
+}
+
+// FunÃ§Ã£o principal
 int main() {
-    No* lista = NULL;  // Inicializa a lista vazia (NULL = sem elementos)
+    No* lista = NULL;
+    int opcao;
 
-    // Inserindo elementos na lista:
-    // Inserções no início ? lista final = 30 -> 20 -> 10
-    lista = inserir(lista, 10);
-    lista = inserir(lista, 20);
-    lista = inserir(lista, 30);
+    do {
+        cout << "\n=== MENU ===\n";
+        cout << "1. Inserir (no inicio)\n";
+        cout << "2. Imprimir\n";
+        cout << "3. Buscar\n";
+        cout << "4. Excluir\n";
+        cout << "0. Sair\n";
+        cout << "Escolha: ";
 
-    cout << "Lista original: ";
-    imprimir(lista);   // deve mostrar: 30 20 10
-    cout << endl;
+        if (!(cin >> opcao)) { // tratamento de entrada invÃ¡lida
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Entrada invalida. Tente novamente.\n";
+            continue;
+        }
 
-    // Testando busca
-    cout << "Buscar 20: " << (buscar(lista, 20) ? "Encontrado" : "Nao encontrado") << endl;
-    cout << "Buscar 50: " << (buscar(lista, 50) ? "Encontrado" : "Nao encontrado") << endl;
+        int valor;
+        switch (opcao) {
+            case 1:
+                cout << "Valor para inserir: ";
+                cin >> valor;
+                lista = inserir(lista, valor);
+                cout << "Inserido.\n";
+                break;
 
-    // Testando exclusão
-    lista = excluir(lista, 20); // remove o elemento 20 da lista
+            case 2:
+                cout << "Lista: ";
+                imprimir(lista);
+                cout << "\n";
+                break;
 
-    cout << "Lista apos excluir 20: ";
-    imprimir(lista);   // deve mostrar: 30 10
-    cout << endl;
+            case 3:
+                cout << "Valor a buscar: ";
+                cin >> valor;
+                cout << (buscar(lista, valor) ? "Encontrado\n" : "Nao encontrado\n");
+                break;
 
+            case 4:
+                cout << "Valor a excluir: ";
+                cin >> valor;
+                if (buscar(lista, valor)) {
+                    lista = excluir(lista, valor);
+                    cout << "Excluido (primeira ocorrencia).\n";
+                } else {
+                    cout << "Valor nao encontrado.\n";
+                }
+                break;
+
+            case 0:
+                cout << "Saindo...\n";
+                break;
+
+            default:
+                cout << "Opcao invalida.\n";
+        }
+    } while (opcao != 0);
+
+    liberarLista(lista);
     return 0;
 }
