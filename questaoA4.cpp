@@ -2,7 +2,7 @@
 #include <limits> // necessário para numeric_limits
 using namespace std;
 
-// Estrutura de um não da lista encadeada
+// Estrutura de um nó da lista encadeada
 struct No {
     int info;
     No* prox;
@@ -119,4 +119,5 @@ int main() {
     liberarLista(lista);
     return 0;
 }
+
 
